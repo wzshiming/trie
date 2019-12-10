@@ -170,6 +170,15 @@ func TestTrie_GetAndPutAndKeys(t *testing.T) {
 	}
 }
 
+func TestTrie_PutEmpty(t *testing.T) {
+	mt := NewTrie()
+	got := mt.Put(nil, nil)
+	want := false
+	if got != want {
+		t.Errorf("Put(nil, nil) = %v want %v", got, want)
+	}
+}
+
 func TestTrie_Get(t *testing.T) {
 	mt := NewTrie()
 

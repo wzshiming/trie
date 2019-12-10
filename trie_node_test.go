@@ -64,3 +64,11 @@ func Test_node_split_and_join(t *testing.T) {
 		}
 	}
 }
+
+func Test_node_String(t *testing.T) {
+	want := &node{
+		zip:  []byte{1, 2, 3, 4, 5},
+		data: []byte{1},
+	}
+	t.Log(want.String())
+}
