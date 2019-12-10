@@ -61,11 +61,11 @@ func (m *mapping) put(key, val []byte) (finish bool) {
 
 	child := m.array[car]
 	if child == nil {
-		child = &node{
+		m.array[car] = &node{
 			zip:  cdr,
 			data: val,
 		}
-		m.array[car] = child
+		child = m.array[car]
 		return true
 	}
 
