@@ -223,3 +223,25 @@ func TestTrie_Get(t *testing.T) {
 		})
 	}
 }
+
+func TestTrie_String(t *testing.T) {
+	mt := NewTrie()
+
+	regs := []struct {
+		name  string
+		magic string
+	}{
+		{"http", "GET /"},
+		{"other", "GGG /"},
+		{"http", "POST /"},
+		{"http", "PUT /"},
+		{"http", "DELETE /"},
+		{"other", "GET //"},
+		{"other", "GET "},
+	}
+
+	for _, reg := range regs {
+		mt.Put([]byte(reg.magic), []byte(reg.name))
+	}
+	t.Log(mt.String())
+}
