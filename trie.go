@@ -50,3 +50,8 @@ func (t *Trie) Put(key, val []byte) (finish bool) {
 	t.size++
 	return true
 }
+
+// Mapping gets the mapping for get only.
+func (t *Trie) Mapping() (m *mapping) {
+	return &t.mapping
+}
