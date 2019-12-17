@@ -89,16 +89,21 @@ func (m *mapping) put(key, val []byte) (finish bool) {
 	return child.mapping.put(cdr, val)
 }
 
-func (m *mapping) get(key []byte, defaulted []byte) (val []byte, finish bool) {
+// Get returns the val in the trie for a key.
+func (m *mapping) Get(key []byte) (val []byte, next *mapping, finish bool) {
+	return m.get(key, nil)
+}
+
+func (m *mapping) get(key []byte, defaulted []byte) (val []byte, next *mapping, finish bool) {
 	if len(key) == 0 {
-		return defaulted, false
+		return defaulted, m, false
 	}
 	car := key[0]
 	cdr := key[1:]
 
 	child := m.array[car]
 	if child == nil {
-		return defaulted, false
+		return defaulted, nil, false
 	}
 
 	if len(child.zip) != 0 {
@@ -106,19 +111,22 @@ func (m *mapping) get(key []byte, defaulted []byte) (val []byte, finish bool) {
 		if len(cdr) != 0 {
 			diff = bytesDiff(child.zip, cdr)
 			if diff == -1 {
-				return child.data, true
+				return child.data, &child.mapping, true
 			}
 		}
 
 		if len(child.zip) > diff {
-			return defaulted, false
+			return defaulted, &child.mapping, false
 		}
 
 		cdr = cdr[diff:]
 	}
 
 	if len(cdr) == 0 {
-		return child.data, child.data != nil
+		if child.data != nil {
+			return child.data, &child.mapping, true
+		}
+		return defaulted, &child.mapping, false
 	}
 
 	if child.data != nil {

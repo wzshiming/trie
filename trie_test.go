@@ -162,7 +162,7 @@ func TestTrie_GetAndPutAndKeys(t *testing.T) {
 	for _, vv := range got {
 		t.Run("", func(t1 *testing.T) {
 
-			got, _ := mt.Get([]byte(vv))
+			got, _, _ := mt.Get([]byte(vv))
 			if !bytes.Equal(got, []byte(vv)) {
 				t.Errorf("Get() gotVal = %q, want %q", got, vv)
 			}
@@ -224,9 +224,8 @@ func TestTrie_Get(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run("", func(t *testing.T) {
-			got, _ := mt.Get([]byte(tt.data))
+			got, _, _ := mt.Get([]byte(tt.data))
 			if !bytes.Equal(got, []byte(tt.want)) {
-				t.Error(mt.mapping.String())
 				t.Errorf("Get(%q) = %q want %q", tt.data, got, tt.want)
 			}
 		})

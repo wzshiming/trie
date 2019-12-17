@@ -148,22 +148,26 @@ func Test_mapping_get(t *testing.T) {
 		key       []byte
 		defaulted []byte
 		val       []byte
+		next      bool
 		ok        bool
 	}{
-		{[]byte{}, nil, nil, false},
-		{[]byte{1}, nil, []byte{2}, true},
-		{[]byte{1, 2}, nil, []byte{2}, false},
-		{[]byte{1, 2, 3}, nil, []byte{0}, true},
-		{[]byte{1, 2, 3, 4}, nil, []byte{0}, false},
-		{[]byte{1, 2, 3, 4, 5}, nil, []byte{1}, true},
-		{[]byte{1, 2, 3, 4, 5, 6}, nil, []byte{1}, false},
-		{[]byte{1, 2, 3, 4, 5, 6, 7}, nil, []byte{1}, false},
+		{[]byte{}, nil, nil, true, false},
+		{[]byte{1}, nil, []byte{2}, true, true},
+		{[]byte{1, 2}, nil, []byte{2}, true, false},
+		{[]byte{1, 2, 3}, nil, []byte{0}, true, true},
+		{[]byte{1, 2, 3, 4}, nil, []byte{0}, true, false},
+		{[]byte{1, 2, 3, 4, 5}, nil, []byte{1}, true, true},
+		{[]byte{1, 2, 3, 4, 5, 6}, nil, []byte{1}, false, false},
+		{[]byte{1, 2, 3, 4, 5, 6, 7}, nil, []byte{1}, false, false},
 	}
 	for _, tt := range tests {
 		t.Run("", func(t *testing.T) {
-			val, ok := got.get(tt.key, nil)
+			val, next, ok := got.get(tt.key, nil)
 			if ok != tt.ok {
 				t.Errorf("get() = %v, want %v", ok, tt.ok)
+			}
+			if (next != nil) != tt.next {
+				t.Errorf("get() = %v, want %v", next != nil, tt.next)
 			}
 			if !bytes.Equal(val, tt.val) {
 				t.Errorf("get() = %v, want %v", val, tt.val)
