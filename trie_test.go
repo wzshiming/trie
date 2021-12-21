@@ -8,7 +8,7 @@ import (
 )
 
 func BenchmarkTrie_Get1(b *testing.B) {
-	mt := NewTrie()
+	mt := NewTrie[[]byte]()
 
 	regs := []struct {
 		key []byte
@@ -29,7 +29,7 @@ func BenchmarkTrie_Get1(b *testing.B) {
 }
 
 func BenchmarkTrie_Get2(b *testing.B) {
-	mt := NewTrie()
+	mt := NewTrie[[]byte]()
 
 	regs := []struct {
 		key []byte
@@ -50,7 +50,7 @@ func BenchmarkTrie_Get2(b *testing.B) {
 }
 
 func BenchmarkTrie_Put1(b *testing.B) {
-	mt := NewTrie()
+	mt := NewTrie[[]byte]()
 	data := []byte("http")
 	var key [8]byte
 	for i := 0; i != b.N; i++ {
@@ -60,7 +60,7 @@ func BenchmarkTrie_Put1(b *testing.B) {
 }
 
 func BenchmarkTrie_Put2(b *testing.B) {
-	mt := NewTrie()
+	mt := NewTrie[[]byte]()
 	data := []byte("http")
 	newFunc := func() interface{} {
 		return make([]byte, 8)
@@ -87,7 +87,7 @@ func BenchmarkTrie_Put2(b *testing.B) {
 }
 
 func BenchmarkTrie_Put3(b *testing.B) {
-	mt := NewTrie()
+	mt := NewTrie[[]byte]()
 	key1 := []byte("key1")
 	key2 := []byte("key2")
 	data := []byte("http")
@@ -106,7 +106,7 @@ func BenchmarkTrie_Put3(b *testing.B) {
 }
 
 func TestTrie_GetAndPutAndKeys(t *testing.T) {
-	mt := NewTrie()
+	mt := NewTrie[[]byte]()
 
 	regs := []string{
 		"AAAAAAAAAA",
@@ -130,7 +130,8 @@ func TestTrie_GetAndPutAndKeys(t *testing.T) {
 	}
 
 	for _, reg := range regs {
-		ok := mt.Put([]byte(reg), []byte(reg))
+		tmp := []byte(reg)
+		ok := mt.Put([]byte(reg), tmp)
 		if !ok {
 			t.Error(reg)
 		}
@@ -161,17 +162,16 @@ func TestTrie_GetAndPutAndKeys(t *testing.T) {
 	}
 	for _, vv := range got {
 		t.Run("", func(t1 *testing.T) {
-
 			got, _, _ := mt.Get([]byte(vv))
 			if !bytes.Equal(got, []byte(vv)) {
-				t.Errorf("Get() gotVal = %q, want %q", got, vv)
+				t.Errorf("Get() = %q, want %q", got, vv)
 			}
 		})
 	}
 }
 
 func TestTrie_PutEmpty(t *testing.T) {
-	mt := NewTrie()
+	mt := NewTrie[[]byte]()
 	got := mt.Put(nil, nil)
 	want := false
 	if got != want {
@@ -180,7 +180,7 @@ func TestTrie_PutEmpty(t *testing.T) {
 }
 
 func TestTrie_Get(t *testing.T) {
-	mt := NewTrie()
+	mt := NewTrie[[]byte]()
 
 	regs := []struct {
 		name  string
@@ -196,7 +196,8 @@ func TestTrie_Get(t *testing.T) {
 	}
 
 	for _, reg := range regs {
-		mt.Put([]byte(reg.magic), []byte(reg.name))
+		tmp := []byte(reg.name)
+		mt.Put([]byte(reg.magic), tmp)
 	}
 
 	tests := []struct {
@@ -233,7 +234,7 @@ func TestTrie_Get(t *testing.T) {
 }
 
 func TestTrie_String(t *testing.T) {
-	mt := NewTrie()
+	mt := NewTrie[[]byte]()
 
 	regs := []struct {
 		name  string
@@ -249,7 +250,8 @@ func TestTrie_String(t *testing.T) {
 	}
 
 	for _, reg := range regs {
-		mt.Put([]byte(reg.magic), []byte(reg.name))
+		tmp := []byte(reg.name)
+		mt.Put([]byte(reg.magic), tmp)
 	}
 	t.Log(mt.String())
 }

@@ -6,33 +6,42 @@ import (
 	"strings"
 )
 
-type node struct {
-	mapping mapping
-	data    []byte
+type node[T any] struct {
+	mapping *mapping[T]
+	data    T
+	has     bool
 	zip     []byte
 }
 
-func (n *node) String() string {
+func (n *node[T]) String() string {
 	var buf strings.Builder
 	buf.WriteString("\n")
 	n.deepString(&buf, nil, 1)
 	return buf.String()
 }
 
-func (n *node) deepString(w io.Writer, key []byte, deep int) {
+func (n *node[T]) deepString(w io.Writer, key []byte, deep int) {
 	key = append(key, n.zip...)
 	deepin(w, deep)
 	fmt.Fprintf(w, "key:  %v %q\n", key, key)
 	deepin(w, deep)
 	fmt.Fprintf(w, "zip:  %v %q\n", n.zip, n.zip)
 	deepin(w, deep)
-	fmt.Fprintf(w, "data: %v %q\n", n.data, n.data)
+	if n.has {
+		fmt.Fprintf(w, "data: %v\n", n.data)
+	} else {
+		fmt.Fprintf(w, "data: <empty>\n")
+	}
 	deepin(w, deep)
-	fmt.Fprintf(w, "mapping:\n")
-	n.mapping.deepString(w, key, deep+1)
+	if n.mapping != nil {
+		fmt.Fprintf(w, "mapping:\n")
+		n.mapping.deepString(w, key, deep+1)
+	} else {
+		fmt.Fprintf(w, "mapping: <empty>\n")
+	}
 }
 
-func (n *node) split(off int) {
+func (n *node[T]) split(off int) {
 	if len(n.zip) <= off {
 		return
 	}
@@ -50,18 +59,23 @@ func (n *node) split(off int) {
 		cdr = nil
 	}
 
-	var array [byteLength]*node
-	array[car] = &node{
+	var m mapping[T]
+	m.array[car] = &node[T]{
 		mapping: n.mapping,
 		zip:     cdr,
 		data:    n.data,
+		has:     n.has,
 	}
-	n.mapping.array = array
-	n.data = nil
+	n.mapping = &m
+
+	// empty data
+	var t T
+	n.data = t
+	n.has = false
 }
 
-func (n *node) join() {
-	var child *node
+func (n *node[T]) join() {
+	var child *node[T]
 	var car byte
 	for i, v := range n.mapping.array {
 		if v == nil {
@@ -78,5 +92,6 @@ func (n *node) join() {
 	n.zip = append(n.zip, car)
 	n.zip = append(n.zip, child.zip...)
 	n.data = child.data
+	n.has = child.has
 	n.mapping = child.mapping
 }

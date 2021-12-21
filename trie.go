@@ -5,26 +5,26 @@ const (
 )
 
 // Trie is a trie tree implementation.
-type Trie struct {
-	mapping
-	deep int
-	size int
+type Trie[T any] struct {
+	mapping[T]
+	depth int
+	size  int
 }
 
 // NewTrie returns a new Trie.
-func NewTrie() *Trie {
-	return &Trie{}
+func NewTrie[T any]() *Trie[T] {
+	return &Trie[T]{}
 }
 
 // String returns format trie in a friendly.
-func (t *Trie) String() string {
+func (t *Trie[T]) String() string {
 	return t.mapping.String()
 }
 
 // Keys returns all key of Trie.
-func (t *Trie) Keys() [][]byte {
+func (t *Trie[T]) Keys() [][]byte {
 	out := make([][]byte, 0, t.size)
-	t.Walk(func(k, v []byte) {
+	t.Walk(func(k []byte, v T) {
 		n := make([]byte, len(k))
 		copy(n, k)
 		out = append(out, n)
@@ -33,25 +33,35 @@ func (t *Trie) Keys() [][]byte {
 }
 
 // Walk calls f sequentially for each key and value present in the trie.
-func (t *Trie) Walk(f func(k, v []byte)) {
-	buf := make([]byte, 0, t.deep)
+func (t *Trie[T]) Walk(f func(k []byte, v T)) {
+	buf := make([]byte, 0, t.depth)
 	t.mapping.walk(buf, f)
 }
 
 // Put sets the val in the trie for a key.
-func (t *Trie) Put(key, val []byte) (finish bool) {
+func (t *Trie[T]) Put(key []byte, val T) (finish bool) {
 	finish = t.mapping.put(key, val)
 	if !finish {
 		return false
 	}
-	if t.deep < len(key) {
-		t.deep = len(key)
+	if t.depth < len(key) {
+		t.depth = len(key)
 	}
 	t.size++
 	return true
 }
 
 // Mapping gets the mapping for get only.
-func (t *Trie) Mapping() (m *mapping) {
+func (t *Trie[T]) Mapping() (m *mapping[T]) {
 	return &t.mapping
+}
+
+// Size returns the size of the trie.
+func (t *Trie[T]) Size() int {
+	return t.size
+}
+
+// Depth returns the depth of the trie.
+func (t *Trie[T]) Depth() int {
+	return t.depth
 }
