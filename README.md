@@ -5,7 +5,7 @@
 [![GitHub license](https://img.shields.io/github/license/wzshiming/trie.svg)](https://github.com/wzshiming/trie/blob/master/LICENSE)
 [![gocover.io](https://gocover.io/_badge/github.com/wzshiming/trie)](https://gocover.io/github.com/wzshiming/trie)
 
-Trie is a Trie Zipper Tree implementation in Golang.
+Trie is a Compressed Prefix Tree Implementation in Golang Generic.
 
 ``` console
 > go test -benchmem -run=^$ -bench . github.com/wzshiming/trie -v
