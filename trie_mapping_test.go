@@ -32,9 +32,9 @@ func Test_bytesDiff(t *testing.T) {
 }
 
 func Test_mapping_put_1(t *testing.T) {
-	got := &mapping[[]byte]{}
+	got := &Mapping[[]byte]{}
 	got.put([]byte{1, 2, 3}, []byte{0})
-	want1 := &mapping[[]byte]{
+	want1 := &Mapping[[]byte]{
 		array: [byteLength]*node[[]byte]{
 			nil,
 			/* 1 */ {zip: []byte{2, 3}, data: []byte{0}, has: true},
@@ -46,10 +46,10 @@ func Test_mapping_put_1(t *testing.T) {
 	}
 
 	got.put([]byte{1, 2, 3, 4, 5}, []byte{1})
-	want2 := &mapping[[]byte]{
+	want2 := &Mapping[[]byte]{
 		array: [byteLength]*node[[]byte]{
 			nil,
-			/* 1 */ {zip: []byte{2, 3}, data: []byte{0}, has: true, mapping: &mapping[[]byte]{
+			/* 1 */ {zip: []byte{2, 3}, data: []byte{0}, has: true, mapping: &Mapping[[]byte]{
 				array: [byteLength]*node[[]byte]{
 					nil, nil, nil, nil,
 					/* 4 */ {zip: []byte{5}, data: []byte{1}, has: true},
@@ -61,13 +61,13 @@ func Test_mapping_put_1(t *testing.T) {
 		t.Errorf("put() = %s, want %s", got, want2)
 	}
 	got.put([]byte{1, 2, 4, 5}, []byte{2})
-	want3 := &mapping[[]byte]{
+	want3 := &Mapping[[]byte]{
 		array: [byteLength]*node[[]byte]{
 			nil,
-			/* 1 */ {zip: []byte{2}, data: nil, mapping: &mapping[[]byte]{
+			/* 1 */ {zip: []byte{2}, data: nil, mapping: &Mapping[[]byte]{
 				array: [byteLength]*node[[]byte]{
 					nil, nil, nil,
-					/* 3 */ {zip: nil, data: []byte{0}, has: true, mapping: &mapping[[]byte]{
+					/* 3 */ {zip: nil, data: []byte{0}, has: true, mapping: &Mapping[[]byte]{
 						array: [byteLength]*node[[]byte]{
 							nil, nil, nil, nil,
 							/* 4 */ {zip: []byte{5}, data: []byte{1}, has: true},
@@ -85,9 +85,9 @@ func Test_mapping_put_1(t *testing.T) {
 }
 
 func Test_mapping_put_2(t *testing.T) {
-	got := &mapping[[]byte]{}
+	got := &Mapping[[]byte]{}
 	got.put([]byte{1}, []byte{0})
-	want1 := &mapping[[]byte]{
+	want1 := &Mapping[[]byte]{
 		array: [byteLength]*node[[]byte]{
 			nil,
 			/* 1 */ {zip: nil, data: []byte{0}, has: true},
@@ -99,10 +99,10 @@ func Test_mapping_put_2(t *testing.T) {
 	}
 
 	got.put([]byte{1, 2, 3}, []byte{1})
-	want2 := &mapping[[]byte]{
+	want2 := &Mapping[[]byte]{
 		array: [byteLength]*node[[]byte]{
 			nil,
-			/* 1 */ {zip: nil, data: []byte{0}, has: true, mapping: &mapping[[]byte]{
+			/* 1 */ {zip: nil, data: []byte{0}, has: true, mapping: &Mapping[[]byte]{
 				array: [byteLength]*node[[]byte]{
 					nil, nil,
 					/* 2 */ {zip: []byte{3}, data: []byte{1}, has: true},
@@ -115,13 +115,13 @@ func Test_mapping_put_2(t *testing.T) {
 		t.Errorf("put() = %s, want %s", got, want2)
 	}
 	got.put([]byte{1, 2}, []byte{2})
-	want3 := &mapping[[]byte]{
+	want3 := &Mapping[[]byte]{
 		array: [byteLength]*node[[]byte]{
 			nil,
-			/* 1 */ {zip: nil, data: []byte{0}, has: true, mapping: &mapping[[]byte]{
+			/* 1 */ {zip: nil, data: []byte{0}, has: true, mapping: &Mapping[[]byte]{
 				array: [byteLength]*node[[]byte]{
 					nil, nil,
-					/* 2 */ {zip: nil, data: []byte{2}, has: true, mapping: &mapping[[]byte]{
+					/* 2 */ {zip: nil, data: []byte{2}, has: true, mapping: &Mapping[[]byte]{
 						array: [byteLength]*node[[]byte]{
 							nil, nil, nil,
 							/* 3 */ {zip: nil, data: []byte{1}, has: true},
@@ -138,7 +138,7 @@ func Test_mapping_put_2(t *testing.T) {
 }
 
 func Test_mapping_get(t *testing.T) {
-	got := &mapping[[]byte]{}
+	got := &Mapping[[]byte]{}
 	got.put([]byte{1, 2, 3}, []byte{3})
 	got.put([]byte{1, 2, 3, 4, 5}, []byte{5})
 	got.put([]byte{1, 2, 3, 4, 5, 6}, []byte{6})
@@ -146,10 +146,10 @@ func Test_mapping_get(t *testing.T) {
 	got.put([]byte{1, 2, 3, 4, 5, 6, 7, 8}, []byte{8})
 	got.put([]byte{1, 2, 3, 4, 5, 6, 7, 9, 9}, []byte{9})
 
-	current7 := &mapping[[]byte]{
+	current7 := &Mapping[[]byte]{
 		array: [byteLength]*node[[]byte]{
 			nil, nil, nil, nil, nil, nil, nil,
-			/* 7 */ {zip: nil, mapping: &mapping[[]byte]{
+			/* 7 */ {zip: nil, mapping: &Mapping[[]byte]{
 				array: [byteLength]*node[[]byte]{
 					nil, nil, nil, nil, nil, nil, nil, nil,
 					{zip: nil, data: []byte{8}, has: true},
@@ -159,25 +159,25 @@ func Test_mapping_get(t *testing.T) {
 		},
 	}
 
-	current6 := &mapping[[]byte]{
+	current6 := &Mapping[[]byte]{
 		array: [byteLength]*node[[]byte]{
 			nil, nil, nil, nil, nil, nil,
 			/* 6 */ {zip: nil, data: []byte{6}, has: true, mapping: current7},
 		},
 	}
-	current5 := &mapping[[]byte]{
+	current5 := &Mapping[[]byte]{
 		array: [byteLength]*node[[]byte]{
 			nil, nil, nil, nil,
 			/* 4 */ {zip: []byte{5}, data: []byte{5}, has: true, mapping: current6},
 		},
 	}
-	current3 := &mapping[[]byte]{
+	current3 := &Mapping[[]byte]{
 		array: [byteLength]*node[[]byte]{
 			nil, nil,
 			/* 2 */ {zip: []byte{3}, data: []byte{3}, has: true, mapping: current5},
 		},
 	}
-	current1 := &mapping[[]byte]{
+	current1 := &Mapping[[]byte]{
 		array: [byteLength]*node[[]byte]{
 			nil,
 			/* 1 */ {zip: nil, data: []byte{1}, has: true, mapping: current3},
@@ -187,7 +187,7 @@ func Test_mapping_get(t *testing.T) {
 		key       []byte
 		defaulted []byte
 		val       []byte
-		current   *mapping[[]byte]
+		current   *Mapping[[]byte]
 		ok        bool
 	}{
 		{[]byte{}, nil, nil, nil, false},

@@ -7,7 +7,7 @@ import (
 )
 
 type node[T any] struct {
-	mapping *mapping[T]
+	mapping *Mapping[T]
 	data    T
 	has     bool
 	zip     []byte
@@ -34,10 +34,10 @@ func (n *node[T]) deepString(w io.Writer, key []byte, deep int) {
 	}
 	deepin(w, deep)
 	if n.mapping != nil {
-		fmt.Fprintf(w, "mapping:\n")
+		fmt.Fprintf(w, "Mapping:\n")
 		n.mapping.deepString(w, key, deep+1)
 	} else {
-		fmt.Fprintf(w, "mapping: <empty>\n")
+		fmt.Fprintf(w, "Mapping: <empty>\n")
 	}
 }
 
@@ -59,7 +59,7 @@ func (n *node[T]) split(off int) {
 		cdr = nil
 	}
 
-	var m mapping[T]
+	var m Mapping[T]
 	m.array[car] = &node[T]{
 		mapping: n.mapping,
 		zip:     cdr,

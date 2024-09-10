@@ -6,9 +6,9 @@ const (
 
 // Trie is a trie tree implementation.
 type Trie[T any] struct {
-	mapping[T]
-	depth int
-	size  int
+	mapping Mapping[T]
+	depth   int
+	size    int
 }
 
 // NewTrie returns a new Trie.
@@ -51,9 +51,14 @@ func (t *Trie[T]) Put(key []byte, val T) (finish bool) {
 	return true
 }
 
-// Mapping gets the mapping for get only.
-func (t *Trie[T]) Mapping() (m *mapping[T]) {
+// Mapping gets the Mapping for get only.
+func (t *Trie[T]) Mapping() (m *Mapping[T]) {
 	return &t.mapping
+}
+
+// Get returns the val in the trie for a key.
+func (t *Trie[T]) Get(key []byte) (val T, current *Mapping[T], finish bool) {
+	return t.mapping.Get(key)
 }
 
 // Size returns the size of the trie.

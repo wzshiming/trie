@@ -15,7 +15,7 @@ func Test_node_split(t *testing.T) {
 	want1 := &node[[]byte]{
 		zip:  []byte{1, 2, 3},
 		data: nil,
-		mapping: &mapping[[]byte]{
+		mapping: &Mapping[[]byte]{
 			array: [byteLength]*node[[]byte]{
 				nil, nil, nil, nil,
 				/* 4 */ {zip: []byte{5}, data: []byte{1}, has: true},
@@ -30,10 +30,10 @@ func Test_node_split(t *testing.T) {
 	want2 := &node[[]byte]{
 		zip:  []byte{1, 2},
 		data: nil,
-		mapping: &mapping[[]byte]{
+		mapping: &Mapping[[]byte]{
 			array: [byteLength]*node[[]byte]{
 				nil, nil, nil,
-				/* 3 */ {zip: nil, data: nil, mapping: &mapping[[]byte]{
+				/* 3 */ {zip: nil, data: nil, mapping: &Mapping[[]byte]{
 					array: [byteLength]*node[[]byte]{
 						nil, nil, nil, nil,
 						/* 4 */ {zip: []byte{5}, data: []byte{1}, has: true},

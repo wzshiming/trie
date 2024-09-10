@@ -6,18 +6,19 @@ import (
 	"strings"
 )
 
-type mapping[T any] struct {
+// Mapping is a getter of the trie.
+type Mapping[T any] struct {
 	array [byteLength]*node[T]
 }
 
-func (m *mapping[T]) String() string {
+func (m *Mapping[T]) String() string {
 	var buf strings.Builder
 	buf.WriteString("\n")
 	m.deepString(&buf, nil, 1)
 	return buf.String()
 }
 
-func (m *mapping[T]) deepString(w io.Writer, key []byte, deep int) {
+func (m *Mapping[T]) deepString(w io.Writer, key []byte, deep int) {
 	isNil := true
 	for i, v := range m.array {
 		if v == nil {
@@ -34,7 +35,7 @@ func (m *mapping[T]) deepString(w io.Writer, key []byte, deep int) {
 	}
 }
 
-func (m *mapping[T]) walk(buf []byte, f func(k []byte, v T)) {
+func (m *Mapping[T]) walk(buf []byte, f func(k []byte, v T)) {
 	for k, v := range m.array {
 		if v == nil {
 			continue
@@ -55,7 +56,7 @@ func (m *mapping[T]) walk(buf []byte, f func(k []byte, v T)) {
 	}
 }
 
-func (m *mapping[T]) put(key []byte, val T) (finish bool) {
+func (m *Mapping[T]) put(key []byte, val T) (finish bool) {
 	if len(key) == 0 {
 		return false
 	}
@@ -97,17 +98,17 @@ func (m *mapping[T]) put(key []byte, val T) (finish bool) {
 	}
 
 	if child.mapping == nil {
-		child.mapping = &mapping[T]{}
+		child.mapping = &Mapping[T]{}
 	}
 	return child.mapping.put(cdr, val)
 }
 
 // Get returns the val in the trie for a key.
-func (m *mapping[T]) Get(key []byte) (val T, current *mapping[T], finish bool) {
+func (m *Mapping[T]) Get(key []byte) (val T, current *Mapping[T], finish bool) {
 	return m.get(nil, key, val, finish)
 }
 
-func (m *mapping[T]) get(prev *mapping[T], key []byte, defaulted T, has bool) (val T, current *mapping[T], finish bool) {
+func (m *Mapping[T]) get(prev *Mapping[T], key []byte, defaulted T, has bool) (val T, current *Mapping[T], finish bool) {
 	if len(key) == 0 {
 		return defaulted, prev, has
 	}
