@@ -34,10 +34,10 @@ func (n *node[T]) deepString(w io.Writer, key []byte, deep int) {
 	}
 	deepin(w, deep)
 	if n.mapping != nil {
-		fmt.Fprintf(w, "Mapping:\n")
+		fmt.Fprintf(w, "mapping:\n")
 		n.mapping.deepString(w, key, deep+1)
 	} else {
-		fmt.Fprintf(w, "Mapping: <empty>\n")
+		fmt.Fprintf(w, "mapping: <empty>\n")
 	}
 }
 
