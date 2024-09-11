@@ -17,6 +17,7 @@ func (t *Trie[T]) MatchWithReader(r io.Reader) (handler T, prefix []byte, err er
 	parent := t.Mapping()
 	off := 0
 	prefix = make([]byte, t.Depth())
+	found := false
 	for {
 		i, err := r.Read(prefix[off:])
 		if err != nil {
@@ -27,8 +28,9 @@ func (t *Trie[T]) MatchWithReader(r io.Reader) (handler T, prefix []byte, err er
 		}
 
 		data, next, ok := parent.Get(prefix[off : off+i])
-		if ok && data != nil {
+		if ok {
 			handler = data
+			found = true
 		}
 
 		off += i
@@ -37,7 +39,7 @@ func (t *Trie[T]) MatchWithReader(r io.Reader) (handler T, prefix []byte, err er
 		}
 		parent = next
 	}
-	if handler == nil {
+	if !found {
 		return handler, prefix[:off], ErrNotFound
 	}
 	return handler, prefix[:off], nil
