@@ -38,7 +38,7 @@ func (t *Trie[T]) Walk(f func(k []byte, v T)) {
 	t.mapping.walk(buf, f)
 }
 
-// Put sets the val in the trie for a key.
+// Put sets the val in the trie for a key; the key is copied, an empty key is rejected.
 func (t *Trie[T]) Put(key []byte, val T) (finish bool) {
 	if len(key) == 0 {
 		return false
