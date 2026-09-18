@@ -3,6 +3,7 @@ package trie
 import (
 	"bytes"
 	"crypto/rand"
+	"reflect"
 	"sync"
 	"testing"
 )
@@ -176,6 +177,69 @@ func TestTrie_PutEmpty(t *testing.T) {
 	want := false
 	if got != want {
 		t.Errorf("Put(nil, nil) = %v want %v", got, want)
+	}
+}
+
+func keyStrings(mt *Trie[int]) []string {
+	var keys []string
+	for _, k := range mt.Keys() {
+		keys = append(keys, string(k))
+	}
+	return keys
+}
+
+func TestTrie_PutBranchNode(t *testing.T) {
+	mt := NewTrie[int]()
+	puts := []string{"ab", "ac", "a"}
+	for i, key := range puts {
+		if !mt.Put([]byte(key), i+1) {
+			t.Errorf("Put(%q) = false want true", key)
+		}
+	}
+	for i, key := range puts {
+		if got, _, ok := mt.Get([]byte(key)); !ok || got != i+1 {
+			t.Errorf("Get(%q) = %v, %v want %v, true", key, got, ok, i+1)
+		}
+	}
+	if got, want := keyStrings(mt), []string{"a", "ab", "ac"}; !reflect.DeepEqual(got, want) {
+		t.Errorf("Keys() = %q want %q", got, want)
+	}
+	if mt.Size() != 3 || mt.Depth() != 2 {
+		t.Errorf("Size(), Depth() = %v, %v want 3, 2", mt.Size(), mt.Depth())
+	}
+}
+
+func TestTrie_PutOverwrite(t *testing.T) {
+	tests := []struct {
+		puts  []string
+		keys  []string
+		depth int
+	}{
+		{[]string{"a"}, []string{"a"}, 1},
+		{[]string{"abc"}, []string{"abc"}, 3},
+		{[]string{"a", "ab"}, []string{"a", "ab"}, 2},
+		{[]string{"ab", "ac", "a"}, []string{"a", "ab", "ac"}, 2},
+	}
+	for _, tt := range tests {
+		key := tt.puts[len(tt.puts)-1]
+		t.Run(key, func(t *testing.T) {
+			mt := NewTrie[int]()
+			for i, k := range tt.puts {
+				mt.Put([]byte(k), i+1)
+			}
+			if !mt.Put([]byte(key), -1) {
+				t.Errorf("Put(%q) = false want true", key)
+			}
+			if got, _, ok := mt.Get([]byte(key)); !ok || got != -1 {
+				t.Errorf("Get(%q) = %v, %v want -1, true", key, got, ok)
+			}
+			if got := keyStrings(mt); !reflect.DeepEqual(got, tt.keys) {
+				t.Errorf("Keys() = %q want %q", got, tt.keys)
+			}
+			if mt.Depth() != tt.depth {
+				t.Errorf("Depth() = %v want %v", mt.Depth(), tt.depth)
+			}
+		})
 	}
 }
 
