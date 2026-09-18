@@ -189,31 +189,35 @@ func Test_mapping_get(t *testing.T) {
 		val       []byte
 		current   *Mapping[[]byte]
 		ok        bool
+		more      bool
 	}{
-		{[]byte{}, nil, nil, nil, false},
-		{[]byte{2}, nil, nil, nil, false},
-		{[]byte{1}, nil, []byte{1}, current1, true},
-		{[]byte{1, 3}, nil, []byte{1}, current1, true},
-		{[]byte{1, 2}, nil, []byte{1}, current1, true},
-		{[]byte{1, 2, 3}, nil, []byte{3}, current3, true},
-		{[]byte{1, 2, 4}, nil, []byte{1}, current1, true},
-		{[]byte{1, 2, 3, 4}, nil, []byte{3}, current3, true},
-		{[]byte{1, 2, 3, 5}, nil, []byte{3}, current3, true},
-		{[]byte{1, 2, 3, 4, 5}, nil, []byte{5}, current5, true},
-		{[]byte{1, 2, 3, 4, 6}, nil, []byte{3}, current3, true},
-		{[]byte{1, 2, 3, 4, 5, 6}, nil, []byte{6}, current6, true},
-		{[]byte{1, 2, 3, 4, 5, 7}, nil, []byte{5}, current5, true},
-		{[]byte{1, 2, 3, 4, 5, 6, 7}, nil, []byte{6}, current6, true},
-		{[]byte{1, 2, 3, 4, 5, 6, 8}, nil, []byte{6}, current6, true},
-		{[]byte{1, 2, 3, 4, 5, 6, 7, 8}, nil, []byte{8}, current7.array[7].mapping, true},
-		{[]byte{1, 2, 3, 4, 5, 6, 7, 8, 9}, nil, []byte{8}, nil, true},
-		{[]byte{1, 2, 3, 4, 5, 6, 7, 9, 9}, nil, []byte{9}, current7.array[7].mapping, true},
+		{[]byte{}, nil, nil, nil, false, false},
+		{[]byte{2}, nil, nil, nil, false, false},
+		{[]byte{1}, nil, []byte{1}, current1, true, true},
+		{[]byte{1, 3}, nil, []byte{1}, current1, true, false},
+		{[]byte{1, 2}, nil, []byte{1}, current1, true, true},
+		{[]byte{1, 2, 3}, nil, []byte{3}, current3, true, true},
+		{[]byte{1, 2, 4}, nil, []byte{1}, current1, true, false},
+		{[]byte{1, 2, 3, 4}, nil, []byte{3}, current3, true, true},
+		{[]byte{1, 2, 3, 5}, nil, []byte{3}, current3, true, false},
+		{[]byte{1, 2, 3, 4, 5}, nil, []byte{5}, current5, true, true},
+		{[]byte{1, 2, 3, 4, 6}, nil, []byte{3}, current3, true, false},
+		{[]byte{1, 2, 3, 4, 5, 6}, nil, []byte{6}, current6, true, true},
+		{[]byte{1, 2, 3, 4, 5, 7}, nil, []byte{5}, current5, true, false},
+		{[]byte{1, 2, 3, 4, 5, 6, 7}, nil, []byte{6}, current6, true, true},
+		{[]byte{1, 2, 3, 4, 5, 6, 8}, nil, []byte{6}, current6, true, false},
+		{[]byte{1, 2, 3, 4, 5, 6, 7, 8}, nil, []byte{8}, current7.array[7].mapping, true, false},
+		{[]byte{1, 2, 3, 4, 5, 6, 7, 8, 9}, nil, []byte{8}, nil, true, false},
+		{[]byte{1, 2, 3, 4, 5, 6, 7, 9, 9}, nil, []byte{9}, current7.array[7].mapping, true, false},
 	}
 	for _, tt := range tests {
 		t.Run(string(tt.key), func(t *testing.T) {
-			val, current, ok := got.get(nil, tt.key, nil, false)
+			val, current, ok, more := got.get(nil, tt.key, nil, false)
 			if ok != tt.ok {
 				t.Errorf("get() ok = %v, want %v", ok, tt.ok)
+			}
+			if more != tt.more {
+				t.Errorf("get() more = %v, want %v", more, tt.more)
 			}
 			if !reflect.DeepEqual(current, tt.current) {
 				t.Errorf("get() current = %v, want %v", current, tt.current)

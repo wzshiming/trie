@@ -99,19 +99,21 @@ func (m *Mapping[T]) put(key []byte, val T) (added bool) {
 
 // Get returns the val in the trie for a key.
 func (m *Mapping[T]) Get(key []byte) (val T, current *Mapping[T], finish bool) {
-	return m.get(nil, key, val, finish)
+	val, current, finish, _ = m.get(nil, key, val, finish)
+	return val, current, finish
 }
 
-func (m *Mapping[T]) get(prev *Mapping[T], key []byte, defaulted T, has bool) (val T, current *Mapping[T], finish bool) {
+// more reports whether a nonempty key is a strict prefix of a stored key.
+func (m *Mapping[T]) get(prev *Mapping[T], key []byte, defaulted T, has bool) (val T, current *Mapping[T], finish bool, more bool) {
 	if len(key) == 0 {
-		return defaulted, prev, has
+		return defaulted, prev, has, false
 	}
 	car := key[0]
 	cdr := key[1:]
 
 	child := m.array[car]
 	if child == nil {
-		return defaulted, prev, has
+		return defaulted, prev, has, false
 	}
 
 	if len(child.zip) != 0 {
@@ -120,14 +122,14 @@ func (m *Mapping[T]) get(prev *Mapping[T], key []byte, defaulted T, has bool) (v
 			diff = bytesDiff(child.zip, cdr)
 			if diff == -1 {
 				if child.has {
-					return child.data, m, true
+					return child.data, m, true, child.mapping != nil
 				}
-				return defaulted, prev, has
+				return defaulted, prev, has, child.mapping != nil
 			}
 		}
 
 		if len(child.zip) > diff {
-			return defaulted, prev, has
+			return defaulted, prev, has, diff == len(cdr)
 		}
 
 		cdr = cdr[diff:]
@@ -135,16 +137,16 @@ func (m *Mapping[T]) get(prev *Mapping[T], key []byte, defaulted T, has bool) (v
 
 	if len(cdr) == 0 {
 		if child.has {
-			return child.data, m, true
+			return child.data, m, true, child.mapping != nil
 		}
-		return defaulted, prev, has
+		return defaulted, prev, has, child.mapping != nil
 	}
 
 	if child.mapping == nil {
 		if child.has {
-			return child.data, child.mapping, true
+			return child.data, child.mapping, true, false
 		}
-		return defaulted, prev, has
+		return defaulted, prev, has, false
 	}
 
 	if child.has {
