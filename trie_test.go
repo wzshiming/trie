@@ -243,6 +243,40 @@ func TestTrie_PutOverwrite(t *testing.T) {
 	}
 }
 
+func TestTrie_PutCopiesKey(t *testing.T) {
+	mt := NewTrie[int]()
+	buf := []byte("abc")
+	mt.Put(buf, 1)
+	buf[1] = 'X'
+	if _, _, ok := mt.Get([]byte("abc")); !ok {
+		t.Error(`Get("abc") = false want true`)
+	}
+	if _, _, ok := mt.Get([]byte("aXc")); ok {
+		t.Error(`Get("aXc") = true want false`)
+	}
+	if got, want := keyStrings(mt), []string{"abc"}; !reflect.DeepEqual(got, want) {
+		t.Errorf("Keys() = %q want %q", got, want)
+	}
+}
+
+func TestTrie_PutCopiesKeyAfterSplit(t *testing.T) {
+	mt := NewTrie[int]()
+	buf := []byte("abcd")
+	mt.Put(buf, 1)
+	copy(buf, "abef")
+	mt.Put(buf, 2)
+	buf[3] = 'X'
+	if _, _, ok := mt.Get([]byte("abef")); !ok {
+		t.Error(`Get("abef") = false want true`)
+	}
+	if _, _, ok := mt.Get([]byte("abeX")); ok {
+		t.Error(`Get("abeX") = true want false`)
+	}
+	if got, want := keyStrings(mt), []string{"abcd", "abef"}; !reflect.DeepEqual(got, want) {
+		t.Errorf("Keys() = %q want %q", got, want)
+	}
+}
+
 func TestTrie_Get(t *testing.T) {
 	mt := NewTrie[[]byte]()
 

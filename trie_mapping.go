@@ -63,14 +63,11 @@ func (m *Mapping[T]) put(key []byte, val T) (added bool) {
 
 	car := key[0]
 	cdr := key[1:]
-	if len(cdr) == 0 {
-		cdr = nil
-	}
 
 	child := m.array[car]
 	if child == nil {
 		m.array[car] = &node[T]{
-			zip:  cdr,
+			zip:  append([]byte(nil), cdr...),
 			data: val,
 			has:  true,
 		}
