@@ -1,6 +1,5 @@
 # trie
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/wzshiming/trie)](https://goreportcard.com/report/github.com/wzshiming/trie)
 [![GoDoc](https://godoc.org/github.com/wzshiming/trie?status.svg)](https://godoc.org/github.com/wzshiming/trie)
 [![GitHub license](https://img.shields.io/github/license/wzshiming/trie.svg)](https://github.com/wzshiming/trie/blob/master/LICENSE)
 
