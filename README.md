@@ -6,25 +6,11 @@
 
 Trie is a Compressed Prefix Tree Implementation in Golang Generic.
 
-``` console
-> go test -benchmem -run=^$ -bench . github.com/wzshiming/trie -v
-goos: linux
-goarch: amd64
-pkg: github.com/wzshiming/trie
-cpu: Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
-BenchmarkTrie_Get1
-BenchmarkTrie_Get1-4    60400056                19.19 ns/op            0 B/op          0 allocs/op
-BenchmarkTrie_Get2
-BenchmarkTrie_Get2-4    64019403                19.07 ns/op            0 B/op          0 allocs/op
-BenchmarkTrie_Put1
-BenchmarkTrie_Put1-4     1234398               939.6 ns/op             0 B/op          0 allocs/op
-BenchmarkTrie_Put2
-BenchmarkTrie_Put2-4     1000000              1228 ns/op             339 B/op          3 allocs/op
-BenchmarkTrie_Put3
-BenchmarkTrie_Put3-4     3234558               398.5 ns/op            96 B/op          1 allocs/op
-PASS
-ok      github.com/wzshiming/trie       7.499s
-```
+- `Put` is not safe to run concurrently with any other operation on the same trie.
+- Once construction is finished, read-only operations on the trie (`Get`, `Walk`, `Keys`, `Size`, `Depth`, `String`, `MatchWithReader`) may run concurrently.
+- `Put` copies the key; the caller keeps ownership of the passed slice.
+- `Get` returns the value of the longest stored key that is a prefix of the lookup key.
+- There is no deletion; removing keys means building a new trie.
 
 ## License
 

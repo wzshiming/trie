@@ -97,7 +97,7 @@ func (m *Mapping[T]) put(key []byte, val T) (added bool) {
 	return child.mapping.put(cdr, val)
 }
 
-// Get returns the val in the trie for a key.
+// Get returns the val of the longest stored key that is a prefix of key.
 func (m *Mapping[T]) Get(key []byte) (val T, current *Mapping[T], finish bool) {
 	val, current, finish, _ = m.get(nil, key, val, finish)
 	return val, current, finish

@@ -32,7 +32,7 @@ func (t *Trie[T]) Keys() [][]byte {
 	return out
 }
 
-// Walk calls f sequentially for each key and value present in the trie.
+// Walk calls f sequentially for each key and value present in the trie; k is a reused buffer valid only during the call.
 func (t *Trie[T]) Walk(f func(k []byte, v T)) {
 	buf := make([]byte, 0, t.depth)
 	t.mapping.walk(buf, f)
@@ -57,7 +57,7 @@ func (t *Trie[T]) Mapping() (m *Mapping[T]) {
 	return &t.mapping
 }
 
-// Get returns the val in the trie for a key.
+// Get returns the val of the longest stored key that is a prefix of key.
 func (t *Trie[T]) Get(key []byte) (val T, current *Mapping[T], finish bool) {
 	return t.mapping.Get(key)
 }
