@@ -74,27 +74,23 @@ func (m *Mapping[T]) put(key []byte, val T) (finish bool) {
 			data: val,
 			has:  true,
 		}
-		child = m.array[car]
 		return true
 	}
 
 	if len(child.zip) != 0 {
-		var diff int
-		if len(cdr) != 0 {
-			diff = bytesDiff(child.zip, cdr)
-			if diff == -1 {
-				child.data = val
-				child.has = true
-				return true
-			}
+		diff := bytesDiff(child.zip, cdr)
+		if diff == -1 {
+			cdr = nil
+		} else {
+			child.split(diff)
 			cdr = cdr[diff:]
 		}
-		child.split(diff)
-		if len(cdr) == 0 {
-			child.data = val
-			child.has = true
-			return true
-		}
+	}
+
+	if len(cdr) == 0 {
+		child.data = val
+		child.has = true
+		return true
 	}
 
 	if child.mapping == nil {
