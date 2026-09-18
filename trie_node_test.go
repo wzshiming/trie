@@ -47,27 +47,6 @@ func Test_node_split(t *testing.T) {
 	}
 }
 
-func Test_node_split_and_join(t *testing.T) {
-	got := &node[[]byte]{
-		zip:  []byte{1, 2, 3, 4, 5},
-		data: []byte{1},
-		has:  true,
-	}
-	want := &node[[]byte]{
-		zip:  []byte{1, 2, 3, 4, 5},
-		data: []byte{1},
-		has:  true,
-	}
-
-	for i := 0; i != 5; i++ {
-		got.split(i)
-		got.join()
-		if !reflect.DeepEqual(want, got) {
-			t.Fatalf("split() = %s, want %s", got, want)
-		}
-	}
-}
-
 func Test_node_String(t *testing.T) {
 	want := &node[[]byte]{
 		zip:  []byte{1, 2, 3, 4, 5},

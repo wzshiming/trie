@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/rand"
 	"reflect"
-	"sync"
 	"testing"
 )
 
@@ -58,52 +57,6 @@ func BenchmarkTrie_Put1(b *testing.B) {
 		rand.Read(key[:])
 		mt.Put(key[:], data)
 	}
-}
-
-func BenchmarkTrie_Put2(b *testing.B) {
-	mt := NewTrie[[]byte]()
-	data := []byte("http")
-	newFunc := func() interface{} {
-		return make([]byte, 8)
-	}
-	pool := sync.Pool{
-		New: newFunc,
-	}
-	wg := sync.WaitGroup{}
-	wg.Add(b.N)
-	limit := make(chan struct{}, 10)
-	for i := 0; i != b.N; i++ {
-		limit <- struct{}{}
-		go func() {
-			buf := pool.Get().([]byte)
-			defer pool.Put(buf)
-
-			rand.Read(buf)
-			mt.Put(buf, data)
-			wg.Done()
-			<-limit
-		}()
-	}
-	wg.Wait()
-}
-
-func BenchmarkTrie_Put3(b *testing.B) {
-	mt := NewTrie[[]byte]()
-	key1 := []byte("key1")
-	key2 := []byte("key2")
-	data := []byte("http")
-	wg := sync.WaitGroup{}
-	wg.Add(b.N)
-	for i := 0; i != b.N; i++ {
-		go func() {
-			mt.Get(key1)
-			mt.Put(key1, data)
-			mt.Get(key2)
-			mt.Put(key2, data)
-			wg.Done()
-		}()
-	}
-	wg.Wait()
 }
 
 func TestTrie_GetAndPutAndKeys(t *testing.T) {

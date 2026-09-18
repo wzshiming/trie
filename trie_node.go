@@ -73,25 +73,3 @@ func (n *node[T]) split(off int) {
 	n.data = t
 	n.has = false
 }
-
-func (n *node[T]) join() {
-	var child *node[T]
-	var car byte
-	for i, v := range n.mapping.array {
-		if v == nil {
-			continue
-		}
-		car = byte(i)
-		child = v
-		break
-	}
-	if child == nil {
-		return
-	}
-
-	n.zip = append(n.zip, car)
-	n.zip = append(n.zip, child.zip...)
-	n.data = child.data
-	n.has = child.has
-	n.mapping = child.mapping
-}
