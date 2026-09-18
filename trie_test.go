@@ -236,8 +236,8 @@ func TestTrie_PutOverwrite(t *testing.T) {
 			if got := keyStrings(mt); !reflect.DeepEqual(got, tt.keys) {
 				t.Errorf("Keys() = %q want %q", got, tt.keys)
 			}
-			if mt.Depth() != tt.depth {
-				t.Errorf("Depth() = %v want %v", mt.Depth(), tt.depth)
+			if mt.Size() != len(tt.puts) || mt.Depth() != tt.depth {
+				t.Errorf("Size(), Depth() = %v, %v want %v, %v", mt.Size(), mt.Depth(), len(tt.puts), tt.depth)
 			}
 		})
 	}
