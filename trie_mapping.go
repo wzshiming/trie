@@ -56,7 +56,7 @@ func (m *Mapping[T]) walk(buf []byte, f func(k []byte, v T)) {
 	}
 }
 
-func (m *Mapping[T]) put(key []byte, val T) (finish bool) {
+func (m *Mapping[T]) put(key []byte, val T) (added bool) {
 	if len(key) == 0 {
 		return false
 	}
@@ -88,9 +88,10 @@ func (m *Mapping[T]) put(key []byte, val T) (finish bool) {
 	}
 
 	if len(cdr) == 0 {
+		added = !child.has
 		child.data = val
 		child.has = true
-		return true
+		return added
 	}
 
 	if child.mapping == nil {

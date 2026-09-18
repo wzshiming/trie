@@ -40,14 +40,15 @@ func (t *Trie[T]) Walk(f func(k []byte, v T)) {
 
 // Put sets the val in the trie for a key.
 func (t *Trie[T]) Put(key []byte, val T) (finish bool) {
-	finish = t.mapping.put(key, val)
-	if !finish {
+	if len(key) == 0 {
 		return false
+	}
+	if t.mapping.put(key, val) {
+		t.size++
 	}
 	if t.depth < len(key) {
 		t.depth = len(key)
 	}
-	t.size++
 	return true
 }
 
